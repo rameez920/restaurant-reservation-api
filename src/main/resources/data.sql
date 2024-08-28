@@ -1,0 +1,1 @@
+INSERT INTO diner (name, dietary_restrictions) values ('Michael', ARRAY[1, 2, 3])
