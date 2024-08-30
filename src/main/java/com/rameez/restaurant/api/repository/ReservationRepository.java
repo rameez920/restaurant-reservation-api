@@ -53,9 +53,9 @@ public class ReservationRepository {
         });
     }
 
-    public void hasExistingReservation(String reservationId) {
+    public void deleteReservation(String reservationId) {
         String query = "DELETE FROM reservation where id = ?";
-        jdbcTemplate.execute(query);
+        jdbcTemplate.update(query, reservationId);
     }
 
     public RowMapper<Reservation> getRowMapper() {
