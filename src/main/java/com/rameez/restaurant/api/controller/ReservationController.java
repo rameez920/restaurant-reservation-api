@@ -1,6 +1,7 @@
 package com.rameez.restaurant.api.controller;
 
 import com.rameez.restaurant.api.repository.DinerRepository;
+import com.rameez.restaurant.api.repository.RestaurantRepository;
 import com.rameez.restaurant.api.request.ReservationRequest;
 import com.rameez.restaurant.api.response.AvailableReservations;
 import com.rameez.restaurant.api.service.ReservationService;
@@ -24,6 +25,9 @@ public class ReservationController {
     @Autowired
     private DinerRepository dinerRepository;
 
+    @Autowired
+    private RestaurantRepository restaurantRepository;
+
     @GetMapping()
     public ResponseEntity<AvailableReservations> getAvailableRestaurants(@RequestParam LocalDateTime startTime, @RequestParam List<String> dinerIds) {
         //check for overlapping reservations
@@ -35,6 +39,8 @@ public class ReservationController {
         //1. get diner restrictions
         List<String> dietaryRestrictions = dinerRepository.getDinerRestrictions(dinerIds);
         //2. filter restaurants based on restrictions
+        List<String> allowedRestaurants = restaurantRepository.getRestaurantsBasedOnDietaryAllowance(dietaryRestrictions);
+
         //3. check resutant_table to find tables with capacity
         //4. filter tables based on available reservation during time
 
