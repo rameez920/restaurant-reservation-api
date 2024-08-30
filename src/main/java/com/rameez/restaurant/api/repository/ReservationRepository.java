@@ -30,7 +30,7 @@ public class ReservationRepository {
     }
 
     public List<Reservation> getReservationForDiners(LocalDateTime startTime, LocalDateTime endTime, List<String> dinerIds) {
-        final String query = "SELECT * FROM reservation WHERE start_time >= ? and end_time <= ? and dine_id in ?";
+        final String query = "SELECT * FROM reservation WHERE start_time >= ? and end_time <= ? and diner_id in (?)";
         return this.jdbcTemplate.query(query, rowMapper, startTime, endTime, dinerIds);
     }
 
@@ -51,6 +51,11 @@ public class ReservationRepository {
                 return reservations.size();
             }
         });
+    }
+
+    public void hasExistingReservation(String reservationId) {
+        String query = "DELETE FROM reservation where id = ?";
+        jdbcTemplate.execute(query);
     }
 
     public RowMapper<Reservation> getRowMapper() {

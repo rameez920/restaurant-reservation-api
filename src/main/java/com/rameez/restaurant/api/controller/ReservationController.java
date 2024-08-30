@@ -27,4 +27,9 @@ public class ReservationController {
         //user dinerIds to create reservations using  tableId
     }
 
+    @DeleteMapping()
+    public void deleteReservation(String reservationId) {
+
+    }
+
 }
