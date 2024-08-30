@@ -15,7 +15,8 @@ public class RestaurantTableRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<RestaurantTable> getRestaurantTables(List<String> restaurantIds, int capacity) {
-        return null;
+    public List<String> getRestaurantTables(List<String> restaurantIds, int capacity) {
+        String query = "SELECT * from restaurant_table WHERE capacity >= ? and restaurant_id in (?)";
+        return jdbcTemplate.queryForList(query, String.class, capacity, restaurantIds);
     }
 }

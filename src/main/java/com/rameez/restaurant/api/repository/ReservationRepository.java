@@ -53,6 +53,11 @@ public class ReservationRepository {
         });
     }
 
+    public List<String> checkExistingReservation(List<String> tableIds, LocalDateTime startTime, LocalDateTime endTime) {
+        String query = "SELECT DISTINCT table_id FROM reservation WHERE (start_time >= ? or end_time <= ?) and table_id in (?)";
+        return jdbcTemplate.queryForList(query, String.class,startTime, endTime, tableIds);
+    }
+
     public void deleteReservation(String reservationId) {
         String query = "DELETE FROM reservation where id = ?";
         jdbcTemplate.update(query, reservationId);
