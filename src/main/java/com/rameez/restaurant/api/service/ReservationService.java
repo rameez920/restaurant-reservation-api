@@ -20,18 +20,29 @@ public class ReservationService {
         return null;
     }
 
+    public List<String> getExistingReservationsReservation(List<String> dinerIds, LocalDateTime startTime, LocalDateTime endTime) {
+        List<Reservation> reservations = reservationRepository.getReservationForDiners(startTime, endTime, dinerIds);
+        return reservations.stream().map(Reservation::getDinerId).toList();
+    }
+
     public boolean createReservation(ReservationRequest reservationRequest) {
-        LocalDateTime startTime = reservationRequest.getStartTime();
-        LocalDateTime endTime = reservationRequest.getEndTime();
-        String restaurantId = reservationRequest.getRestaurantId();
-        //get table Id from restaurantId
         List<Reservation> reservations = new ArrayList<>();
         for (String dinerId : reservationRequest.getDinerIds()) {
-            Reservation reservation = new Reservation();
+            Reservation reservation = new Reservation
+                    (
+                            reservationRequest.getStartTime(),
+                            reservationRequest.getEndTime(),
+                            reservationRequest.getTableId(),
+                            dinerId
+                    );
             reservations.add(reservation);
         }
         reservationRepository.createReservations(reservations);
-        return false;
+        return true;
+    }
+
+    public void deleteReservation(String reservationId) {
+        reservationRepository.deleteReservation(reservationId);
     }
 
 }

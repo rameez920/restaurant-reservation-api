@@ -30,7 +30,7 @@ public class ReservationRepository {
     }
 
     public List<Reservation> getReservationForDiners(LocalDateTime startTime, LocalDateTime endTime, List<String> dinerIds) {
-        final String query = "SELECT * FROM reservation WHERE start_time >= ? and end_time <= ? and diner_id in (?)";
+        final String query = "SELECT * FROM reservation WHERE (start_time >= ? or end_time <= ?) and diner_id in (?)";
         return this.jdbcTemplate.query(query, rowMapper, startTime, endTime, dinerIds);
     }
 
