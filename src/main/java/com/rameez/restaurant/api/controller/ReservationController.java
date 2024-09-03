@@ -25,8 +25,7 @@ public class ReservationController {
 
     @GetMapping()
     public ResponseEntity<AvailableRestaurantsResponse> getAvailableRestaurants(@RequestParam LocalDateTime startTime, @RequestParam List<String> dinerIds) {
-        List<String> dinersWithReservations = reservationService.getExistingReservationsForDiners(dinerIds, startTime, startTime.plusHours(RESERVATION_HOUR_LENGTH));
-        if (!dinersWithReservations.isEmpty()) {
+        if (overlappingReservationsExist(startTime, dinerIds)) {
             AvailableRestaurantsResponse response = new AvailableRestaurantsResponse();
             response.setMessage("diners have existing reservation during time");
             return ResponseEntity.badRequest().body(response);
@@ -43,15 +42,8 @@ public class ReservationController {
     @PostMapping()
     public ResponseEntity<Object> createReservation(@RequestBody ReservationRequest reservationRequest) {
         try {
-            List<String> dinersWithReservations = reservationService.getExistingReservationsForDiners(
-                    reservationRequest.getDinerIds(),
-                    reservationRequest.getStartTime(),
-                    reservationRequest.getStartTime().plusHours(RESERVATION_HOUR_LENGTH)
-            );
-            if (!dinersWithReservations.isEmpty()) {
-                AvailableRestaurantsResponse response = new AvailableRestaurantsResponse();
-                response.setMessage("diners have existing reservation during time");
-                return ResponseEntity.badRequest().body(response);
+            if (overlappingReservationsExist(reservationRequest.getStartTime(), reservationRequest.getDinerIds())) {
+                return ResponseEntity.badRequest().body("diners have existing reservation during time");
             }
 
             reservationService.createReservation(reservationRequest);
@@ -71,6 +63,11 @@ public class ReservationController {
             System.err.println("Error deleting reservation: " + e.getMessage());
             return ResponseEntity.internalServerError().build();
         }
+    }
+
+    private boolean overlappingReservationsExist(LocalDateTime startTime, List<String> dinerIds) {
+        List<String> dinersWithReservations = reservationService.getExistingReservationsForDiners(dinerIds, startTime, startTime.plusHours(RESERVATION_HOUR_LENGTH));
+        return !dinersWithReservations.isEmpty();
     }
 
 }
