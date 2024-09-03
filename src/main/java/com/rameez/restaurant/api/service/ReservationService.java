@@ -38,17 +38,18 @@ public class ReservationService {
     public List<RestaurantTable> getAvailableTablesForDiners(LocalDateTime startTime, List<String> dinerIds) {
         //1. get diner restrictions
         List<String> dietaryRestrictions = dinerRepository.getDinerRestrictions(dinerIds);
+
         //2. filter restaurants based on restrictions
         List<String> allowedRestaurants = restaurantRepository.getRestaurantsBasedOnDietaryAllowance(dietaryRestrictions);
 
-        //3. tables with capacity
+        //3. find tables with capacity
         Set<RestaurantTable> restaurantTables = restaurantTableRepository.getRestaurantTables(allowedRestaurants, dinerIds.size());
         List<String> tableIds = restaurantTables.stream().map(RestaurantTable::getTableId).collect(Collectors.toList());
+
         //4. filter tables based on available reservation during time
         List<String> reservedTables = reservationRepository.checkExistingReservation(tableIds, startTime, startTime.plusHours(RESERVATION_HOUR_LENGTH));
-        for (String reservedTableId : reservedTables) {
-            restaurantTables.remove(reservedTableId);
-        }
+        reservedTables.forEach(restaurantTables::remove);
+
         return new ArrayList<>(restaurantTables);
     }
 
