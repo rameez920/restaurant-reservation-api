@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -31,7 +32,7 @@ public class RestaurantTableRepository {
         return new HashSet<>(jdbcTemplate.query(query, rowMapper, capacity, restaurantIds));
     }
 
-    public RestaurantTable getAvailableTable(String restrauntId, String startTime, String endTime, int capacity) {
+    public RestaurantTable getAvailableTable(String restrauntId, LocalDateTime startTime, LocalDateTime endTime, int capacity) {
         String query = "SELECT * from restaurant_table WHERE capacity >= ? and restaurant_id = ? and table_id NOT IN (SELECT table_id FROM reservation WHERE (start_time >= ? or end_time <= ?)) ORDER BY capacity LIMIT 1";
         return jdbcTemplate.query(query, rowMapper, capacity, restrauntId, startTime, endTime).get(0);
     }

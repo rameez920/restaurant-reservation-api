@@ -66,16 +66,15 @@ public class ReservationService {
     }
 
     public boolean createReservation(ReservationRequest reservationRequest) {
+        String restaurantId = reservationRequest.getRestaurantId();
+        LocalDateTime startTime = reservationRequest.getStartTime();
+        LocalDateTime endTime = reservationRequest.getStartTime().plusHours(RESERVATION_HOUR_LENGTH);
+        int capacity = reservationRequest.getDinerIds().size();
+
+        String availableTableId = restaurantTableRepository.getAvailableTable(restaurantId, startTime, endTime, capacity).getTableId();
         List<Reservation> reservations = new ArrayList<>();
         for (String dinerId : reservationRequest.getDinerIds()) {
-            Reservation reservation = new Reservation
-                    (
-                            reservationRequest.getStartTime(),
-                            reservationRequest.getStartTime().plusHours(RESERVATION_HOUR_LENGTH),
-                            reservationRequest.getTableId(),
-                            dinerId
-                    );
-            reservations.add(reservation);
+            reservations.add(new Reservation(startTime, endTime, availableTableId, dinerId));
         }
         reservationRepository.createReservations(reservations);
         return true;

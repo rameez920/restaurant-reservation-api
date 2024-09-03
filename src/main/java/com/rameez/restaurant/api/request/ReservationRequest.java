@@ -11,9 +11,6 @@ public class ReservationRequest {
 
     private LocalDateTime startTime;
 
-
-    private String tableId;
-
     public List<String> getDinerIds() {
         return dinerIds;
     }
@@ -36,14 +33,5 @@ public class ReservationRequest {
 
     public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
-    }
-
-
-    public String getTableId() {
-        return tableId;
-    }
-
-    public void setTableId(String tableId) {
-        this.tableId = tableId;
     }
 }
