@@ -11,7 +11,6 @@ public class ReservationRequest {
 
     private LocalDateTime startTime;
 
-    private LocalDateTime endTime;
 
     private String tableId;
 
@@ -39,13 +38,6 @@ public class ReservationRequest {
         this.startTime = startTime;
     }
 
-    public LocalDateTime getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(LocalDateTime endTime) {
-        this.endTime = endTime;
-    }
 
     public String getTableId() {
         return tableId;

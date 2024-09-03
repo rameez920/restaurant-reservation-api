@@ -1,7 +1,9 @@
 package com.rameez.restaurant.api.controller;
 
+import com.rameez.restaurant.api.entity.Restaurant;
+import com.rameez.restaurant.api.entity.RestaurantTable;
 import com.rameez.restaurant.api.request.ReservationRequest;
-import com.rameez.restaurant.api.response.AvailableReservations;
+import com.rameez.restaurant.api.response.AvailableRestaurantsResponse;
 import com.rameez.restaurant.api.service.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,15 +22,16 @@ public class ReservationController {
 
 
     @GetMapping()
-    public ResponseEntity<AvailableReservations> getAvailableRestaurants(@RequestParam LocalDateTime startTime, @RequestParam List<String> dinerIds) {
+    public ResponseEntity<AvailableRestaurantsResponse> getAvailableRestaurants(@RequestParam LocalDateTime startTime, @RequestParam List<String> dinerIds) {
         //check for overlapping reservations
-        LocalDateTime
+       // LocalDateTime
         List<String> dinersWithReservations = reservationService.getExistingReservationsForDiners(dinerIds, startTime, startTime.plusHours(2));
         if (!dinersWithReservations.isEmpty()) {
             return ResponseEntity.badRequest().build();
 
         }
-
+        List<RestaurantTable> availableTables = reservationService.getAvailableTablesForDiners(startTime, dinerIds);
+        List<Restaurant> availableRestaurants = reservationService.getRestaurants(availableTables);
         return null;
     }
 
