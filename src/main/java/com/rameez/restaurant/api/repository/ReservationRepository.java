@@ -4,6 +4,8 @@ import com.rameez.restaurant.api.entity.Reservation;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
@@ -16,6 +18,8 @@ import java.util.List;
 public class ReservationRepository {
     private final JdbcTemplate jdbcTemplate;
 
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
     private final RowMapper<Reservation> rowMapper = (rs, rowNum) -> {
         Reservation reservation = new Reservation();
         reservation.setDinerId(rs.getString("diner_id"));
@@ -25,13 +29,20 @@ public class ReservationRepository {
         return reservation;
     };
 
-    public ReservationRepository(JdbcTemplate jdbcTemplate) {
+    public ReservationRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 
     public List<Reservation> getReservationForDiners(LocalDateTime startTime, LocalDateTime endTime, List<String> dinerIds) {
-        final String query = "SELECT * FROM reservation WHERE (start_time >= ? or end_time <= ?) and diner_id in (?)";
-        return this.jdbcTemplate.query(query, rowMapper, startTime, endTime, dinerIds);
+        final String query = "SELECT * FROM reservation WHERE (start_time >= :startTime or end_time <= :endTime) and diner_id in (:dinerIds)";
+
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("startTime", startTime);
+        parameters.addValue("endTime", endTime);
+        parameters.addValue("dinerIds", dinerIds);
+
+        return this.namedParameterJdbcTemplate.query(query, parameters, rowMapper);
     }
 
     public void createReservations(List<Reservation> reservations) {

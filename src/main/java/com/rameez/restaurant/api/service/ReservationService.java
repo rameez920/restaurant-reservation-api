@@ -70,8 +70,8 @@ public class ReservationService {
         LocalDateTime startTime = reservationRequest.getStartTime();
         LocalDateTime endTime = reservationRequest.getStartTime().plusHours(RESERVATION_HOUR_LENGTH);
         int capacity = reservationRequest.getDinerIds().size();
-
         String availableTableId = restaurantTableRepository.getAvailableTable(restaurantId, startTime, endTime, capacity).getTableId();
+
         List<Reservation> reservations = new ArrayList<>();
         for (String dinerId : reservationRequest.getDinerIds()) {
             reservations.add(new Reservation(startTime, endTime, availableTableId, dinerId));

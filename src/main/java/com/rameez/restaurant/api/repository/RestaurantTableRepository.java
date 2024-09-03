@@ -40,7 +40,7 @@ public class RestaurantTableRepository {
     }
 
     public RestaurantTable getAvailableTable(String restaurantId, LocalDateTime startTime, LocalDateTime endTime, int capacity) {
-        String query = "SELECT * from restaurant_table WHERE capacity >= :capacity and restaurant_id = :restaurantId and table_id NOT IN (SELECT table_id FROM reservation WHERE (start_time >= :startTime or end_time <= :endTime)) ORDER BY capacity LIMIT 1";
+        String query = "SELECT * from restaurant_table WHERE capacity >= :capacity and restaurant_id = :restaurantId and id NOT IN (SELECT table_id FROM reservation WHERE (start_time >= :startTime or end_time <= :endTime)) ORDER BY capacity LIMIT 1";
 
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("capacity", capacity);

@@ -17,6 +17,7 @@ import java.util.List;
 @RequestMapping("/restaurants/reservations")
 public class ReservationController {
 
+    public static final int RESERVATION_HOUR_LENGTH = 2;
 
     @Autowired
     private ReservationService reservationService;
@@ -24,12 +25,10 @@ public class ReservationController {
 
     @GetMapping()
     public ResponseEntity<AvailableRestaurantsResponse> getAvailableRestaurants(@RequestParam LocalDateTime startTime, @RequestParam List<String> dinerIds) {
-        //check for overlapping reservations
-       // LocalDateTime
-        List<String> dinersWithReservations = reservationService.getExistingReservationsForDiners(dinerIds, startTime, startTime.plusHours(2));
+        List<String> dinersWithReservations = reservationService.getExistingReservationsForDiners(dinerIds, startTime, startTime.plusHours(RESERVATION_HOUR_LENGTH));
         if (!dinersWithReservations.isEmpty()) {
             AvailableRestaurantsResponse response = new AvailableRestaurantsResponse();
-            response.setMessage("double booked reservations");
+            response.setMessage("diners have existing reservation during time");
             return ResponseEntity.badRequest().body(response);
 
         }
@@ -44,6 +43,17 @@ public class ReservationController {
     @PostMapping()
     public ResponseEntity<Object> createReservation(@RequestBody ReservationRequest reservationRequest) {
         try {
+            List<String> dinersWithReservations = reservationService.getExistingReservationsForDiners(
+                    reservationRequest.getDinerIds(),
+                    reservationRequest.getStartTime(),
+                    reservationRequest.getStartTime().plusHours(RESERVATION_HOUR_LENGTH)
+            );
+            if (!dinersWithReservations.isEmpty()) {
+                AvailableRestaurantsResponse response = new AvailableRestaurantsResponse();
+                response.setMessage("diners have existing reservation during time");
+                return ResponseEntity.badRequest().body(response);
+            }
+
             reservationService.createReservation(reservationRequest);
             return ResponseEntity.status(Response.SC_CREATED).build();
         } catch (Exception e) {
@@ -53,8 +63,14 @@ public class ReservationController {
     }
 
     @DeleteMapping()
-    public void deleteReservation(String reservationId) {
-        reservationService.deleteReservation(reservationId);
+    public ResponseEntity<Object> deleteReservation(@RequestParam String reservationId) {
+        try {
+            reservationService.deleteReservation(reservationId);
+            return ResponseEntity.ok("Reservation deleted");
+        } catch (Exception e) {
+            System.err.println("Error deleting reservation: " + e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
 }
