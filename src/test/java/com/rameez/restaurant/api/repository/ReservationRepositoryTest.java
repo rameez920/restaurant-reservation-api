@@ -41,13 +41,4 @@ public class ReservationRepositoryTest {
        assertEquals(6, res.size());
     }
 
-//    @Test
-//    public void getReservationsTest() {
-//        List<Integer> dinerIds = List.of(1, 2, 3, 4, 5, 6);
-//        List<Reservation> reservations = reservationRepository.getReservationForDiners(startTime, endTime, dinerIds);
-//        assertEquals(6, reservations.size());
-//
-//        List<Reservation> res = jdbcTemplate.query("SELECT * FROM reservation", reservationRepository.getRowMapper());
-//        assertEquals(6, res.size());
-//    }
 }

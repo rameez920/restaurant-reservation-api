@@ -65,7 +65,7 @@ public class ReservationService {
         return reservations.stream().map(Reservation::getDinerId).toList();
     }
 
-    public boolean createReservation(ReservationRequest reservationRequest) {
+    public void createReservation(ReservationRequest reservationRequest) {
         String restaurantId = reservationRequest.getRestaurantId();
         LocalDateTime startTime = reservationRequest.getStartTime();
         LocalDateTime endTime = reservationRequest.getStartTime().plusHours(RESERVATION_HOUR_LENGTH);
@@ -77,7 +77,6 @@ public class ReservationService {
             reservations.add(new Reservation(startTime, endTime, availableTableId, dinerId));
         }
         reservationRepository.createReservations(reservations);
-        return true;
     }
 
     public void deleteReservation(String reservationId) {
