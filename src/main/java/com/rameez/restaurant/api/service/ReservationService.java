@@ -40,10 +40,15 @@ public class ReservationService {
         List<String> dietaryRestrictions = dinerRepository.getDinerRestrictions(dinerIds);
 
         //2. filter restaurants based on restrictions
-        List<String> allowedRestaurants = restaurantRepository.getRestaurantsBasedOnDietaryAllowance(dietaryRestrictions);
+        //3, find tables with capacity
+        Set<RestaurantTable> restaurantTables;
+        if (!dietaryRestrictions.isEmpty()) {
+            List<String> allowedRestaurants = restaurantRepository.getRestaurantsBasedOnDietaryAllowance(dietaryRestrictions);
+            restaurantTables = restaurantTableRepository.getRestaurantTables(allowedRestaurants, dinerIds.size());
+        } else {
+            restaurantTables = restaurantTableRepository.getRestaurantTables(dinerIds.size());
+        }
 
-        //3. find tables with capacity
-        Set<RestaurantTable> restaurantTables = restaurantTableRepository.getRestaurantTables(allowedRestaurants, dinerIds.size());
         List<String> tableIds = restaurantTables.stream().map(RestaurantTable::getTableId).collect(Collectors.toList());
 
         //4. filter tables based on available reservation during time
@@ -53,7 +58,7 @@ public class ReservationService {
         return new ArrayList<>(restaurantTables);
     }
 
-    public List<Restaurant> getRestaurants(List<RestaurantTable> availableTables) {
+    public List<Restaurant> getRestaurantsForTable(List<RestaurantTable> availableTables) {
         Set<String> restaurantIds = new HashSet<>();
         for (RestaurantTable table : availableTables) {
             restaurantIds.add(table.getRestaurantId());

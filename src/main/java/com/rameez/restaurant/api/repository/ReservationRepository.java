@@ -65,8 +65,14 @@ public class ReservationRepository {
     }
 
     public List<String> checkExistingReservation(List<String> tableIds, LocalDateTime startTime, LocalDateTime endTime) {
-        String query = "SELECT DISTINCT table_id FROM reservation WHERE (start_time >= ? or end_time <= ?) and table_id in (?)";
-        return jdbcTemplate.queryForList(query, String.class,startTime, endTime, tableIds);
+        String query = "SELECT DISTINCT table_id FROM reservation WHERE (start_time >= :startTime or end_time <= :endTime) and table_id in (:tableIds)";
+
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("startTime", startTime);
+        parameters.addValue("endTime", endTime);
+        parameters.addValue("tableIds", tableIds);
+
+        return this.namedParameterJdbcTemplate.queryForList(query, parameters, String.class);
     }
 
     public void deleteReservation(String reservationId) {

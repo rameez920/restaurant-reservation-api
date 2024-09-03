@@ -32,7 +32,7 @@ public class ReservationController {
 
         }
         List<RestaurantTable> availableTables = reservationService.getAvailableTablesForDiners(startTime, dinerIds);
-        List<Restaurant> availableRestaurants = reservationService.getRestaurants(availableTables);
+        List<Restaurant> availableRestaurants = reservationService.getRestaurantsForTable(availableTables);
         AvailableRestaurantsResponse response = new AvailableRestaurantsResponse();
         response.setMessage("success");
         response.setRestaurants(availableRestaurants);

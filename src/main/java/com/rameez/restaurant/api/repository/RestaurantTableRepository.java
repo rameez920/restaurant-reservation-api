@@ -1,7 +1,6 @@
 package com.rameez.restaurant.api.repository;
 
 import com.rameez.restaurant.api.entity.RestaurantTable;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -35,6 +34,15 @@ public class RestaurantTableRepository {
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("capacity", capacity);
         parameters.addValue("restaurantIds", restaurantIds);
+
+        return new HashSet<>(jdbcTemplate.query(query, parameters, rowMapper));
+    }
+
+    public Set<RestaurantTable> getRestaurantTables(int capacity) {
+        String query = "SELECT * from restaurant_table WHERE capacity >= :capacity";
+
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("capacity", capacity);
 
         return new HashSet<>(jdbcTemplate.query(query, parameters, rowMapper));
     }
